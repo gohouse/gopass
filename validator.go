@@ -16,9 +16,15 @@ type Rules map[string][]string
 // RuleHandler ...
 type RuleHandler func(data interface{}, rule ...string) error
 
+type Options struct {
+	msg Data
+}
+type OptionHandler func(options *Options)
+
 // Validator ...
 type Validator struct {
 	sync.Map
+	*Options
 }
 
 // ValidatorHandler ...
@@ -28,11 +34,23 @@ var once sync.Once
 var vd *Validator
 
 // NewValidator ...
-func NewValidator() *Validator {
+func NewValidator(opts ...OptionHandler) *Validator {
 	once.Do(func() {
 		vd = &Validator{}
 	})
+	if len(opts) > 0 {
+		vd.Options = &Options{}
+	}
+	for _, o := range opts {
+		o(vd.Options)
+	}
 	return vd
+}
+
+func Message(msg Data) OptionHandler {
+	return func(o *Options) {
+		o.msg = msg
+	}
 }
 
 // Use ...
@@ -44,7 +62,10 @@ func (v *Validator) Use(opts ...ValidatorHandler) *Validator {
 }
 
 // Validate ...
-func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...interface{}) error {
+func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...Data) error {
+	if len(msgs) > 0 {
+		v.msg = msgs[0]
+	}
 	// 检查rules
 	for key, val := range rules {
 		// 解析rules.val
@@ -63,10 +84,18 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...i
 			// 开始验证
 			rh := v.Getter(ruleReal)
 			if rh == nil {
-				return errors.New(fmt.Sprintf("%s验证规则不存在", ruleReal))
+				return errors.New(fmt.Sprintf("%s rule not exists", ruleReal))
 			}
 			err := rh(dataReal, rule)
 			if err != nil {
+				// 判断是否有自定义错误信息
+				if v.msg != nil {
+					// 返回自定义了错误信息
+					if v, ok := v.msg[ruleReal]; ok {
+						return errors.New(fmt.Sprintf("%s(%s)", v, key))
+					}
+				}
+				// 返回默认错误信息
 				return errors.New(fmt.Sprintf("%s(%s)", err.Error(), key))
 			}
 		}

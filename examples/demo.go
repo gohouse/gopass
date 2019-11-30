@@ -15,8 +15,9 @@ func main()  {
 		"password":{"required","min:6","max:32"},
 	}
 
-	//v := gopass.NewValidator().Use(rules.Required(),rules.Min(),rules.Max(),rules.Numberic())
-	v := gopass.NewValidator().Use(rules.Default())
+	// 自定义错误信息
+	var msg = gopass.Data{"required":"参数缺失啊啊啊"}
+	v := gopass.NewValidator(gopass.Message(msg)).Use(rules.Default())
 	err := v.Validate(data,rule)
 	fmt.Println(err)
 }

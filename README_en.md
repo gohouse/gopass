@@ -75,6 +75,7 @@ func main()  {
 func mustabc() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("mustabc", func(data interface{}, rule ...string) error {
+			// Just change the validation logic here
 			if t.New(data).String() != "abc" {
 				return errors.New("abc needed")
 			}
