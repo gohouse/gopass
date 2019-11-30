@@ -19,7 +19,7 @@ func Max() gopass.ValidatorHandler {
 			rules := strings.Split(rule[0], ":")
 			// 获取data长度
 			if len(t.New(data).String()) > t.New(rules[1]).Int() {
-				return errors.New("参数长度有误")
+				return errors.New("参数长度超限")
 			}
 			return nil
 		})
