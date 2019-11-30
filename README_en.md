@@ -1,10 +1,10 @@
 # gopass
-gopass 是一个简单优雅的golang参数验证器
+a simple and beautiful validator for golang
 
-## 特点
-支持常见的规则验证，同时，可以轻松的自定义验证规则，还可以按需引入需要的规则
+## feature
+Supports common validation rules, also，You can easily add new validation rules.   
 
-## 安装
+## install
 - go mod (vgo)
 ```sh
 require github.com/fizzday/gopass master
@@ -15,7 +15,7 @@ require github.com/fizzday/gopass master
 go get github.com/fizzday/gopass
 ```
 
-## 使用示例
+## usage
 
 ```go
 package main
@@ -34,18 +34,20 @@ func main()  {
 		"mobile":{"required","min:7","max:14","numberic"},
 		"password":{"required","min:6","max:32"},
 	}
-    // 这里是按需引入
+    
+	// here you can only import some rules you need
 	//v := gopass.NewValidator().Use(rules.Required(),rules.Min(),rules.Max(),rules.Numberic())
-    // 这里是引入默认的所有规则
+
+	// here you can import all default rules
 	v := gopass.NewValidator().Use(rules.Default())
 	err := v.Validate(data,rule)
 	fmt.Println(err)
 }
 ```
 
-## 自定义验证规则
+## Define validation rules yourself 
 
-自定义一个规则叫`mustabc`，意思是，参数值必须为`abc`，否则验证不通过
+Customize a rule called `mustabc`, which means that the parameter value must be` abc`, otherwise the verification fails
 ```go
 package main
 
@@ -81,7 +83,7 @@ func mustabc() gopass.ValidatorHandler {
 	}
 }
 ```
-运行,会得到以下结果
+Running it, you will get the following results
 ```shell script
 abc needed(mobile)
 ```
