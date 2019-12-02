@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Max ...
 func Max() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("max", func(data interface{}, rule ...string) error {

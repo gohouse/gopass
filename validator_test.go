@@ -10,16 +10,15 @@ import (
 func TestNewValidator(t *testing.T) {
 
 	data := Data{
-		"mobile":1234567,
+		"mobile": 1234567,
 	}
 	rule := Rules{
-		"mobile":{"mustabc"},
+		"mobile": {"mustabc"},
 	}
 	v := NewValidator().Use(mustabc())
-	err:=v.Validate(data,rule)
+	err := v.Validate(data, rule)
 	fmt.Println(err)
 }
-
 
 func mustabc() ValidatorHandler {
 	return func(v *Validator) {

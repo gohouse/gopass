@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Min ...
 func Min() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("min", func(data interface{}, rule ...string) error {

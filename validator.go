@@ -16,9 +16,12 @@ type Rules map[string][]string
 // RuleHandler ...
 type RuleHandler func(data interface{}, rule ...string) error
 
+// Options ...
 type Options struct {
 	msg Data
 }
+
+// OptionHandler ...
 type OptionHandler func(options *Options)
 
 // Validator ...
@@ -47,6 +50,7 @@ func NewValidator(opts ...OptionHandler) *Validator {
 	return vd
 }
 
+// Message ...
 func Message(msg Data) OptionHandler {
 	return func(o *Options) {
 		o.msg = msg
@@ -66,10 +70,12 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 	if len(msgs) > 0 {
 		v.msg = msgs[0]
 	}
-	// 检查rules
-	for key, val := range rules {
+	// 验证rules
+	//todo 开启多线程，同时验证多个规则
+	for field, allRules := range rules {
 		// 解析rules.val
-		for _, rule := range val {
+		//todo 开启多线程，同时解析多个规则
+		for _, rule := range allRules {
 			// 如果有冒号，则取分割后的索引为0的数据作为验证对象
 			var ruleReal = rule
 			if strings.Contains(rule, ":") {
@@ -78,7 +84,7 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 			}
 			// 获取要验证的数据
 			var dataReal interface{}
-			if v2, ok := data[key]; ok {
+			if v2, ok := data[field]; ok {
 				dataReal = v2
 			}
 			// 开始验证
@@ -92,11 +98,11 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 				if v.msg != nil {
 					// 返回自定义了错误信息
 					if v, ok := v.msg[ruleReal]; ok {
-						return errors.New(fmt.Sprintf("%s(%s)", v, key))
+						return errors.New(fmt.Sprintf("%s(%s)", v, field))
 					}
 				}
 				// 返回默认错误信息
-				return errors.New(fmt.Sprintf("%s(%s)", err.Error(), key))
+				return errors.New(fmt.Sprintf("%s(%s)", err.Error(), field))
 			}
 		}
 	}

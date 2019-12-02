@@ -6,6 +6,7 @@ import (
 	"github.com/gohouse/t"
 )
 
+// Numberic ...
 func Numberic() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("numberic", func(data interface{}, rule ...string) error {

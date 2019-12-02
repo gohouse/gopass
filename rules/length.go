@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Length ...
 func Length() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("length", func(data interface{}, rule ...string) error {
