@@ -45,6 +45,7 @@ func main()  {
 
 	// 这里是引入默认的所有规则
 	v := gopass.NewValidator().Use(rules.Default())
+
 	err := v.Validate(data,rule)
 	fmt.Println(err)
 }
@@ -53,6 +54,7 @@ func main()  {
 ## 自定义验证规则
 
 自定义一个规则叫`mustabc`，意思是，参数值必须为`abc`，否则验证不通过
+
 ```go
 package main
 
@@ -72,6 +74,7 @@ func main()  {
 	}
     
 	v := gopass.NewValidator().Use(mustabc())
+
 	err := v.Validate(data,rule)
 	fmt.Println(err)
 }
@@ -89,18 +92,22 @@ func mustabc() gopass.ValidatorHandler {
 	}
 }
 ```
+
 运行,会得到以下结果
+
 ```shell script
 abc needed(mobile)
 ```
 
 ## 自定义错误信息
+
 ```go
 package main
 
 import (
 	"fmt"
 	"github.com/gohouse/gopass"
+	"github.com/gohouse/gopass/ruleFacades"
 	"github.com/gohouse/gopass/rules"
 )
 
@@ -108,19 +115,27 @@ func main()  {
 	data := gopass.Data{
 		"mobile":1234567,
 	}
+	// 规则也可以使用快捷规则方法
+	rf := ruleFacades.NewRuleFacades()
 	rule := gopass.Rules{
 		"mobile":{"required","min:7","max:14","numberic"},
-		"password":{"required","min:6","max:32"},
+		"password":{rf.Required(),rf.Min(6),rf.Max(32)},
 	}
 
 	// 自定义错误信息
 	var msg = gopass.Data{"required":"参数缺失啊啊啊"}
+
 	v := gopass.NewValidator(gopass.Message(msg)).Use(rules.Default())
+
 	err := v.Validate(data,rule)
+	// 也可以不在初始化传入自定义错误信息，而是作为第三个参数传入，如
+	// err := v.Validate(data,rule,msg)
 	fmt.Println(err)
 }
 ```
-执行，会输出
+
+执行，会输出  
+
 ```shell script
 参数缺失啊啊啊(password)
 ```

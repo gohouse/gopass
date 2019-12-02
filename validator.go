@@ -88,11 +88,11 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 				dataReal = v2
 			}
 			// 开始验证
-			rh := v.Getter(ruleReal)
-			if rh == nil {
+			ruleHandler := v.Getter(ruleReal)
+			if ruleHandler == nil {
 				return errors.New(fmt.Sprintf("%s rule not exists", ruleReal))
 			}
-			err := rh(dataReal, rule)
+			err := ruleHandler(dataReal, rule)
 			if err != nil {
 				// 判断是否有自定义错误信息
 				if v.msg != nil {
