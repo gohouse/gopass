@@ -34,3 +34,28 @@ func (*RuleFacades) Max(arg interface{}) string {
 func (*RuleFacades) Length(arg interface{}) string {
 	return fmt.Sprintf("length:%v", arg)
 }
+
+// Before ...
+func (*RuleFacades) Before(arg interface{}) string {
+	return fmt.Sprintf("before:%v", arg)
+}
+
+// BeforeOrEqual ...
+func (*RuleFacades) BeforeOrEqual(arg interface{}) string {
+	return fmt.Sprintf("before_or_equal:%v", arg)
+}
+
+// DateEqual ...
+func (*RuleFacades) DateEqual(arg interface{}) string {
+	return fmt.Sprintf("date_equal:%v", arg)
+}
+
+// After ...
+func (*RuleFacades) After(arg interface{}) string {
+	return fmt.Sprintf("after:%v", arg)
+}
+
+// AfterOrEqual ...
+func (*RuleFacades) AfterOrEqual(arg interface{}) string {
+	return fmt.Sprintf("after_or_equal:%v", arg)
+}

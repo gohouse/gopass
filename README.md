@@ -116,10 +116,10 @@ func main()  {
 		"mobile":1234567,
 	}
 	// 规则也可以使用快捷规则方法
-	rf := ruleFacades.NewRuleFacades()
+	r := ruleFacades.NewRuleFacades()
 	rule := gopass.Rules{
 		"mobile":{"required","min:7","max:14","numberic"},
-		"password":{rf.Required(),rf.Min(6),rf.Max(32)},
+		"password":{r.Required(),r.Min(6),r.Max(32)},
 	}
 
 	// 自定义错误信息
