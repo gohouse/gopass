@@ -14,3 +14,4 @@
 *.idea
 *.sum
 *.bin
+.DS_Store
