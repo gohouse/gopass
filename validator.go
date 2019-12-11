@@ -26,8 +26,8 @@ type OptionHandler func(options *Options)
 
 // Validator ...
 type Validator struct {
-	sync.Map
-	*Options
+	rule *sync.Map
+	option *Options
 }
 
 // ValidatorHandler ...
@@ -39,13 +39,10 @@ var vd *Validator
 // NewValidator ...
 func NewValidator(opts ...OptionHandler) *Validator {
 	once.Do(func() {
-		vd = &Validator{}
+		vd = &Validator{rule:&sync.Map{},option:&Options{}}
 	})
-	if len(opts) > 0 {
-		vd.Options = &Options{}
-	}
 	for _, o := range opts {
-		o(vd.Options)
+		o(vd.option)
 	}
 	return vd
 }
@@ -68,7 +65,7 @@ func (v *Validator) Use(opts ...ValidatorHandler) *Validator {
 // Validate ...
 func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...Data) error {
 	if len(msgs) > 0 {
-		v.msg = msgs[0]
+		v.option.msg = msgs[0]
 	}
 	// 验证rules
 	//todo 开启多线程，同时验证多个规则
@@ -95,9 +92,9 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 			err := ruleHandler(dataReal, rule)
 			if err != nil {
 				// 判断是否有自定义错误信息
-				if v.msg != nil {
+				if v.option.msg != nil {
 					// 返回自定义了错误信息
-					if v, ok := v.msg[ruleReal]; ok {
+					if v, ok := v.option.msg[ruleReal]; ok {
 						return errors.New(fmt.Sprintf("%s(%s)", v, field))
 					}
 				}
@@ -111,7 +108,7 @@ func (v *Validator) Validate(data map[string]interface{}, rules Rules, msgs ...D
 
 // Register ...
 func (v *Validator) Register(rule string, obj RuleHandler) {
-	v.Store(rule, obj)
+	v.rule.Store(rule, obj)
 
 	// 初始化的时候做一次getter测试
 	// 如果有问题在初始化阶段就暴露出来
@@ -124,7 +121,7 @@ func (v *Validator) Register(rule string, obj RuleHandler) {
 
 // Getter ...
 func (v *Validator) Getter(rule string) RuleHandler {
-	if value, ok := v.Load(rule); ok {
+	if value, ok := v.rule.Load(rule); ok {
 		return value.(RuleHandler)
 	}
 	return nil
