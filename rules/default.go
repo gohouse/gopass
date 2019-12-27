@@ -18,5 +18,6 @@ func Default() gopass.ValidatorHandler {
 		DateEqual()(v)
 		After()(v)
 		AfterOrEqual()(v)
+		In()(v)
 	}
 }
