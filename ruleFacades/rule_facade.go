@@ -1,6 +1,10 @@
 package ruleFacades
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/gohouse/t"
+	"strings"
+)
 
 // RuleFacades ...
 type RuleFacades struct{}
@@ -58,4 +62,9 @@ func (*RuleFacades) After(arg interface{}) string {
 // AfterOrEqual ...
 func (*RuleFacades) AfterOrEqual(arg interface{}) string {
 	return fmt.Sprintf("after_or_equal:%v", arg)
+}
+
+// In ...
+func (*RuleFacades) In(arg []interface{}) string {
+	return fmt.Sprintf("in:%v", strings.Join(t.New(arg).SliceString(), "|"))
 }

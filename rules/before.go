@@ -12,16 +12,21 @@ func Before() gopass.ValidatorHandler {
 	return func(v *gopass.Validator) {
 		v.Register("before", func(data interface{}, rule ...string) error {
 			if len(rule) == 0 {
-				return errors.New("before规则格式有误")
+				return errors.New("before规则格式有误,如: before:2019-12-25")
 			}
-			if !strings.Contains(rule[0], ":") {
-				return errors.New("before规则格式有误")
+			if !strings.Contains(rule[0], "before:") {
+				return errors.New("before规则格式有误,如: before:2019-12-25")
 			}
 
 			rules := strings.Split(rule[0], ":")
 
+			if len(rules)!=2 {
+				return errors.New("before规则格式有误,如: before:2019-12-25")
+			}
+			val := strings.TrimSpace(rules[1])
+
 			// 日期计算
-			parse, e := time.Parse(DateFormat, rules[1])
+			parse, e := time.Parse(DateFormat, val)
 			if e != nil {
 				return e
 			}

@@ -14,7 +14,7 @@ func AfterOrEqual() gopass.ValidatorHandler {
 			if len(rule) == 0 {
 				return errors.New("after_or_equal规则格式有误")
 			}
-			if !strings.Contains(rule[0], ":") {
+			if !strings.Contains(rule[0], ":after_or_equal") {
 				return errors.New("after_or_equal规则格式有误")
 			}
 
