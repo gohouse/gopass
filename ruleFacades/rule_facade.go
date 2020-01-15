@@ -24,6 +24,11 @@ func (*RuleFacades) Numberic() string {
 	return "numberic"
 }
 
+// NotZero ...
+func (*RuleFacades) NotZero() string {
+	return "not_zero"
+}
+
 // Min ...
 func (*RuleFacades) Min(arg interface{}) string {
 	return fmt.Sprintf("min:%v", arg)

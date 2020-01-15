@@ -19,5 +19,6 @@ func Default() gopass.ValidatorHandler {
 		After()(v)
 		AfterOrEqual()(v)
 		In()(v)
+		NotZero()(v)
 	}
 }
