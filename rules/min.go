@@ -1,29 +1,37 @@
 package rules
 
 import (
-	"errors"
-	"github.com/gohouse/gopass"
+	"fmt"
+	"github.com/gohouse/e"
+	"github.com/gohouse/gopass/gopassRuler"
 	"github.com/gohouse/t"
-	"strings"
 )
 
-// Min ...
-func Min() gopass.ValidatorHandler {
-	return func(v *gopass.Validator) {
-		v.Register("min", func(data interface{}, rule ...string) error {
-			if len(rule) == 0 {
-				return errors.New("min规则格式有误")
-			}
-			if !strings.Contains(rule[0], ":") {
-				return errors.New("min规则格式有误")
-			}
+// MinString 定义规则名字
+const MinString = "min"
 
-			rules := strings.Split(rule[0], ":")
-			// 获取data长度并比较
-			if len(t.New(data).String()) < t.New(rules[1]).Int() {
-				return errors.New("参数长度不足")
-			}
-			return nil
-		})
+func init() {
+	// 注册 required 验证器
+	gopassRuler.Register(MinString, &MinValidator{})
+	// 注册 required 错误提示消息
+	// gopassRuler.RegisterMessageMulti(defaultMessages)
+}
+
+// MinValidator 参数最小值验证器
+type MinValidator struct{}
+
+// Validate 实现当前规则的验证接口
+func (rv *MinValidator) Validate(data interface{}, field, rule string, msgs ...map[string]string) e.Error {
+	if rule == "" {
+		return e.New("rule error, eg: (min:3)")
 	}
+	if t.New(data).Float64() < t.New(rule).Float64() {
+		return gopassRuler.GetMsgByRule(MinString, field, rule, msgs...)
+	}
+	return nil
+}
+
+// Min 最小值
+func Min(arg interface{}) string {
+	return fmt.Sprintf("min:%v", arg)
 }

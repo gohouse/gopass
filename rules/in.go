@@ -1,38 +1,43 @@
 package rules
 
 import (
-	"errors"
 	"fmt"
-	"github.com/gohouse/gopass"
+	"github.com/gohouse/e"
+	"github.com/gohouse/gopass/gopassRuler"
 	"github.com/gohouse/t"
 	"strings"
 )
 
-// Max ...
-func In() gopass.ValidatorHandler {
-	return func(v *gopass.Validator) {
-		v.Register("in", func(data interface{}, rule ...string) error {
-			if len(rule) == 0 {
-				return errors.New("in规则格式有误,如: in:ab|cd")
-			}
-			if !strings.Contains(rule[0], "in:") {
-				return errors.New("in规则格式有误,如: in:ab|cd")
-			}
-			rules := strings.Split(rule[0], ":")
+// InString 定义规则名字
+const InString = "in"
 
-			if len(rules)!=2 {
-				return errors.New("in规则格式有误,如: in:ab|cd")
-			}
-			val := strings.TrimSpace(rules[1])
+func init() {
+	// 注册 required 验证器
+	gopassRuler.Register(InString, &InValidator{})
+	// 注册 required 错误提示消息
+	// gopassRuler.RegisterMessageMulti(defaultMessages)
+}
 
-			vals := strings.Split(val,"|")
-			// 检查是否包含在内
-			for _,item := range vals {
-				if strings.TrimSpace(item) == t.New(data).String() {
-					return nil
-				}
-			}
-			return errors.New(fmt.Sprint("参数值只能是: ",val))
-		})
+// InValidator 参数范围验证器
+type InValidator struct{}
+
+// Validate 实现当前规则的验证接口
+func (rv *InValidator) Validate(data interface{}, field, rule string, msgs ...map[string]string) e.Error {
+	split := t.New(rule).SpliteAndTrimSpace(",")
+	if len(split) == 0 {
+		return e.New("rule error, eg: (in:1,a,3,b)")
 	}
+	if !t.New(data).InArrayString(split) {
+		return gopassRuler.GetMsgByRule(InString, field, rule, msgs...)
+	}
+	return nil
+}
+
+// In 参数范围
+func In(args ...interface{}) string {
+	var tmp []string
+	for _, v := range args {
+		tmp = append(tmp, t.New(v).String())
+	}
+	return fmt.Sprintf("in:%s", strings.Join(tmp, ","))
 }

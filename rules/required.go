@@ -1,23 +1,32 @@
 package rules
 
 import (
-	"errors"
-	"github.com/gohouse/gopass"
+	"github.com/gohouse/e"
+	"github.com/gohouse/gopass/gopassRuler"
 )
 
-// Required ...
-func Required() gopass.ValidatorHandler {
-	return func(v *gopass.Validator) {
-		v.Register("required", RequirdRule())
-	}
+// RequiredString 定义规则名字
+const RequiredString = "required"
+
+func init() {
+	// 注册 required 验证器
+	gopassRuler.Register(RequiredString, &RequiredValidator{})
+	// 注册 required 错误提示消息
+	// gopassRuler.RegisterMessageMulti(defaultMessages)
 }
 
-// RequirdRule ...
-func RequirdRule() gopass.RuleHandler {
-	return func(data interface{}, rule ...string) error {
-		if data == nil {
-			return errors.New("参数缺失")
-		}
-		return nil
+// RequiredValidator 必传参数验证器
+type RequiredValidator struct{}
+
+// Validate 实现当前规则的验证接口
+func (rv *RequiredValidator) Validate(data interface{}, field, rule string, msgs ...map[string]string) e.Error {
+	if data == nil {
+		return gopassRuler.GetMsgByRule(RequiredString, field, rule, msgs...)
 	}
+	return nil
+}
+
+// Required 必传参数
+func Required() string {
+	return "required"
 }
